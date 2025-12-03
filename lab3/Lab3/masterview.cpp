@@ -46,17 +46,18 @@ void MasterView::goDepartmentView()
     pushwidgetto(departmentView);
 }
 
-void MasterView::goPatientEditView()
+void MasterView::goPatientEditView(int row)
 {
-    patientEditView = new PatientEditView(this);
+    patientEditView = new PatientEditView(this,row);
     pushwidgetto(patientEditView);
+    connect(patientEditView,SIGNAL(goPreviousView()),this,SLOT(goPreviousView()));
 }
 
 void MasterView::goPatientView()
 {
     patientView = new PatientView(this);
     pushwidgetto(patientView);
-    connect(patientView,SIGNAL(goPatientEditView()),this,SLOT(goPatientEditView()));
+    connect(patientView,SIGNAL(goPatientEditView(int)),this,SLOT(goPatientEditView(int)));
 }
 
 void MasterView::goPreviousView()

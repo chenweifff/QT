@@ -1,4 +1,6 @@
 #include "idatabase.h"
+#include <QModelIndex>
+#include <QUuid>
 
 void IDatabase::ininDatabase()
 {
@@ -9,6 +11,55 @@ void IDatabase::ininDatabase()
         qDebug()<< "fail to open database";
     }else
         qDebug()<< "open database is ok" << database.connectionName();
+}
+
+bool IDatabase::initPatientModle()
+{
+    patientTabModel = new QSqlTableModel(this,database);
+    patientTabModel->setTable("patient");
+    patientTabModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    patientTabModel->setSort(patientTabModel->fieldIndex("name"),Qt::AscendingOrder);//排序
+    if(!(patientTabModel->select()))//查询
+        return false;
+    thepatientSelection = new QItemSelectionModel(patientTabModel);
+    return true;
+}
+
+int IDatabase::addNewpatient()
+{
+    patientTabModel->insertRow(patientTabModel->rowCount(),QModelIndex());
+    QModelIndex curIndex = patientTabModel->index(patientTabModel->rowCount()-1,1);
+    int curRecNo = curIndex.row();
+    QSqlRecord curRec = patientTabModel->record(curRecNo);
+    curRec.setValue("CREATEDTIMESTAMP",QDateTime::currentDateTime().toString("yyyy-MM-dd"));
+    curRec.setValue("ID",QUuid::createUuid().toString(QUuid::WithoutBraces));
+    patientTabModel->setRecord(curRecNo,curRec);
+    return curIndex.row();
+}
+
+bool IDatabase::searchPatient(QString filter)
+{
+    patientTabModel->setFilter(filter);
+    return patientTabModel->select();
+}
+
+void IDatabase::deleteCurrentPatient()
+{
+    QModelIndex curIndex = thepatientSelection->currentIndex();
+    patientTabModel->removeRow(curIndex.row());
+    patientTabModel->submitAll();
+    patientTabModel->select();
+}
+
+
+bool IDatabase::submitPatientEdit()
+{
+    return patientTabModel->submitAll();
+}
+
+void IDatabase::revertPatientEdit()
+{
+    patientTabModel->revertAll();
 }
 
 QString IDatabase::userLogin(QString userName, QString password)
