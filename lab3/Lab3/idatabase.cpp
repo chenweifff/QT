@@ -5,7 +5,7 @@
 void IDatabase::ininDatabase()
 {
     database=QSqlDatabase::addDatabase("QSQLITE");//添加驱动
-    QString aFile = "/D:/PPTHomew/qt/实验三/Lab3.db";
+    QString aFile = "D:/PPTHomew/qt/实验三/Lab3.db";
     database.setDatabaseName(aFile);//设置数据库名称
     if(!database.open()){
         qDebug()<< "fail to open database";
@@ -34,6 +34,7 @@ int IDatabase::addNewpatient()
     curRec.setValue("CREATEDTIMESTAMP",QDateTime::currentDateTime().toString("yyyy-MM-dd"));
     curRec.setValue("ID",QUuid::createUuid().toString(QUuid::WithoutBraces));
     patientTabModel->setRecord(curRecNo,curRec);
+
     return curIndex.row();
 }
 
@@ -54,7 +55,13 @@ void IDatabase::deleteCurrentPatient()
 
 bool IDatabase::submitPatientEdit()
 {
-    return patientTabModel->submitAll();
+    bool success = patientTabModel->submitAll();
+    if (success) {
+        patientTabModel->select(); // 重新查询确保数据同步
+    } else {
+        qDebug() << "提交失败：" << patientTabModel->lastError().text();
+    }
+    return success;
 }
 
 void IDatabase::revertPatientEdit()
