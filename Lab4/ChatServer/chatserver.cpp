@@ -2,6 +2,7 @@
 #include "serverworker.h"
 #include <QJsonValue>
 #include <QJsonObject>
+#include <QJsonArray>
 
 
 ChatServer::ChatServer(QObject *parent):
@@ -65,6 +66,18 @@ void ChatServer::jsonReceived(ServerWorker *sender, const QJsonObject &docObj)
         connectedMessage["type"] = "newuser";
         connectedMessage["username"] = usernameVal.toString();
         broadcast(connectedMessage,sender);
+
+        QJsonObject userListMessage;
+        userListMessage["type"] = "userlist";
+        QJsonArray userlist;
+        for(ServerWorker *worker : m_clients){
+            if(worker == sender)
+                userlist.append(worker->userName() + "*");
+            else
+                userlist.append(worker->userName());
+        }
+        userListMessage["userlist"] = userlist;
+        sender->sendJson(userListMessage);
     }
 }
 
@@ -77,7 +90,7 @@ void ChatServer::userDisconnected(ServerWorker *sender)
         disconnectedMessage["type"] = "userdisconnected";
         disconnectedMessage["username"] = userName;
         broadcast(disconnectedMessage,nullptr);
-        emit logMessage(userName + "disconnected");
+        emit logMessage(userName + " disconnected");
     }
     sender->deleteLater();
 }
