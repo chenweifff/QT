@@ -11,6 +11,9 @@ class ChatServer : public QTcpServer
 public:
     explicit ChatServer(QObject *parent = nullptr);
 
+    // 添加检查用户名是否重复的方法
+    bool isUsernameTaken(const QString &username);
+
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
     QVector<ServerWorker*>m_clients;

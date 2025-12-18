@@ -3,6 +3,7 @@
 #include <QHostAddress>
 #include <QJsonValue>
 #include <QJsonObject>
+#include <QMessageBox>  // 添加这个头文件
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -23,6 +24,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_loginButton_clicked()
 {
+    if(ui->usernameEdit->text().trimmed().isEmpty()) {
+        QMessageBox::warning(this, "登录失败", "用户名不能为空");
+        return;
+    }
     m_chatclient->connectToServer(QHostAddress(ui->serverEdit->text()),1967);
 }
 
@@ -48,7 +53,8 @@ void MainWindow::on_layoutButton_clicked()
 
 void MainWindow::connectedToServer()
 {
-    ui->stackedWidget->setCurrentWidget(ui->chatPage);
+    // 注意：这里只发送登录信息，不立即切换页面
+    // 等待服务器返回成功后再切换
     m_chatclient->sendMessage(ui->usernameEdit->text(),"login");
 }
 
@@ -62,6 +68,26 @@ void MainWindow::jsonReceived(const QJsonObject &docObj)
     const QJsonValue typeVal = docObj.value("type");
     if(typeVal.isNull() || !typeVal.isString())
         return;
+
+    // 添加处理登录错误
+    if(typeVal.toString().compare("loginError",Qt::CaseInsensitive) == 0){
+        const QJsonValue textVal = docObj.value("text");
+        if(textVal.isNull() || !textVal.isString())
+            return;
+
+        const QString errorMsg = textVal.toString();
+        // 在客户端控制台输出错误信息
+        qDebug() << "登录失败：" << errorMsg;
+
+        // 显示错误消息给用户
+        QMessageBox::warning(this, "登录失败", errorMsg);
+
+        // 断开连接，让用户重新输入
+        m_chatclient->disconnectFromHost();
+        ui->stackedWidget->setCurrentWidget(ui->loginPage);
+        return;
+    }
+
     if(typeVal.toString().compare("message",Qt::CaseInsensitive) == 0){
         const QJsonValue textVal = docObj.value("text");
         const QJsonValue senderVal = docObj.value("sender");
@@ -92,6 +118,11 @@ void MainWindow::jsonReceived(const QJsonObject &docObj)
             return;
         userLeft(usernameVal.toString());
     }else if(typeVal.toString().compare("userlist",Qt::CaseInsensitive)==0){
+        // 收到用户列表，表示登录成功，切换页面
+        if(ui->stackedWidget->currentWidget() != ui->chatPage) {
+            ui->stackedWidget->setCurrentWidget(ui->chatPage);
+        }
+
         const QJsonValue userlistVal = docObj.value("userlist");
         if(userlistVal.isNull() || !userlistVal.isArray())
             return;
@@ -120,4 +151,3 @@ void MainWindow::userListReceived(const QStringList &list)
     ui->userlistWidget->clear();
     ui->userlistWidget->addItems(list);
 }
-

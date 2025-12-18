@@ -10,6 +10,7 @@ class chatClient : public QObject
 public:
     explicit chatClient(QObject *parent = nullptr);
 
+
 signals:
     void connected();
     void messageReceived(const QString &text);

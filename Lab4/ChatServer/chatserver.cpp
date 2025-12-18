@@ -3,12 +3,24 @@
 #include <QJsonValue>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDebug>  // 添加这个头文件
 
 
 ChatServer::ChatServer(QObject *parent):
     QTcpServer(parent)
 {
 
+}
+
+// 添加检查用户名是否重复的方法
+bool ChatServer::isUsernameTaken(const QString &username)
+{
+    for(ServerWorker *worker : m_clients){
+        if(worker->userName() == username){
+            return true;  // 用户名已存在
+        }
+    }
+    return false;  // 用户名可用
 }
 
 void ChatServer::incomingConnection(qintptr socketDescriptor)
@@ -61,10 +73,34 @@ void ChatServer::jsonReceived(ServerWorker *sender, const QJsonObject &docObj)
         if(usernameVal.isNull() || !usernameVal.isString())
             return;
 
-        sender->setUserName(usernameVal.toString());
+        const QString username = usernameVal.toString().trimmed();
+        if(username.isEmpty()) {
+            // 用户名为空，发送错误信息
+            QJsonObject errorMessage;
+            errorMessage["type"] = "loginError";
+            errorMessage["text"] = "用户名不能为空";
+            sender->sendJson(errorMessage);
+            return;
+        }
+
+        // 检查用户名是否已存在
+        if(isUsernameTaken(username)) {
+            // 用户名重复，发送错误信息
+            QJsonObject errorMessage;
+            errorMessage["type"] = "loginError";
+            errorMessage["text"] = "用户名已存在，请选择其他用户名";
+            sender->sendJson(errorMessage);
+
+            // 在服务器控制台输出错误信息
+            qDebug() << "登录失败：用户名" << username << "已存在";
+            emit logMessage(QString("登录失败：用户名%1已存在").arg(username));
+            return;
+        }
+
+        sender->setUserName(username);
         QJsonObject connectedMessage;
         connectedMessage["type"] = "newuser";
-        connectedMessage["username"] = usernameVal.toString();
+        connectedMessage["username"] = username;
         broadcast(connectedMessage,sender);
 
         QJsonObject userListMessage;
@@ -78,6 +114,10 @@ void ChatServer::jsonReceived(ServerWorker *sender, const QJsonObject &docObj)
         }
         userListMessage["userlist"] = userlist;
         sender->sendJson(userListMessage);
+
+        // 在服务器控制台输出成功信息
+        qDebug() << "用户" << username << "登录成功";
+        emit logMessage(QString("用户%1登录成功").arg(username));
     }
 }
 
@@ -94,5 +134,3 @@ void ChatServer::userDisconnected(ServerWorker *sender)
     }
     sender->deleteLater();
 }
-
-
