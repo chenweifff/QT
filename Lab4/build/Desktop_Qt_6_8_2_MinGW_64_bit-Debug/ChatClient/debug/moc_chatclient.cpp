@@ -50,7 +50,8 @@ static constexpr auto qt_meta_stringdata_ZN10chatClientE = QtMocHelpers::stringD
     "connectToServer",
     "QHostAddress",
     "address",
-    "port"
+    "port",
+    "disconnectFromHost"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -62,7 +63,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10chatClientE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -70,15 +71,16 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10chatClientE[] = {
        3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   56,    2, 0x06,    1 /* Public */,
-       3,    1,   57,    2, 0x06,    2 /* Public */,
-       5,    1,   60,    2, 0x06,    4 /* Public */,
+       1,    0,   62,    2, 0x06,    1 /* Public */,
+       3,    1,   63,    2, 0x06,    2 /* Public */,
+       5,    1,   66,    2, 0x06,    4 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       7,    0,   63,    2, 0x0a,    6 /* Public */,
-       8,    2,   64,    2, 0x0a,    7 /* Public */,
-       8,    1,   69,    2, 0x2a,   10 /* Public | MethodCloned */,
-      10,    2,   72,    2, 0x0a,   12 /* Public */,
+       7,    0,   69,    2, 0x0a,    6 /* Public */,
+       8,    2,   70,    2, 0x0a,    7 /* Public */,
+       8,    1,   75,    2, 0x2a,   10 /* Public | MethodCloned */,
+      10,    2,   78,    2, 0x0a,   12 /* Public */,
+      14,    0,   83,    2, 0x0a,   15 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -90,6 +92,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10chatClientE[] = {
     QMetaType::Void, QMetaType::QString, QMetaType::QString,    4,    9,
     QMetaType::Void, QMetaType::QString,    4,
     QMetaType::Void, 0x80000000 | 11, QMetaType::UShort,   12,   13,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -123,7 +126,9 @@ Q_CONSTINIT const QMetaObject chatClient::staticMetaObject = { {
         // method 'connectToServer'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QHostAddress &, std::false_type>,
-        QtPrivate::TypeAndForceComplete<quint16, std::false_type>
+        QtPrivate::TypeAndForceComplete<quint16, std::false_type>,
+        // method 'disconnectFromHost'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
 } };
@@ -140,6 +145,7 @@ void chatClient::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 4: _t->sendMessage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
         case 5: _t->sendMessage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 6: _t->connectToServer((*reinterpret_cast< std::add_pointer_t<QHostAddress>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<quint16>>(_a[2]))); break;
+        case 7: _t->disconnectFromHost(); break;
         default: ;
         }
     }
@@ -188,14 +194,14 @@ int chatClient::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 8;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 8)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 7;
+        _id -= 8;
     }
     return _id;
 }

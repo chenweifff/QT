@@ -35,7 +35,9 @@ void MainWindow::on_sayButton_clicked()
 
 
 void MainWindow::on_layoutButton_clicked()
+
 {
+    m_chatclient->disconnectFromHost();
     ui->stackedWidget->setCurrentWidget(ui->loginPage);
 }
 

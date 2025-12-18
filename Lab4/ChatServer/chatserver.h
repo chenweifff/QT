@@ -14,6 +14,7 @@ public:
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
     QVector<ServerWorker*>m_clients;
+
     void broadcast(const QJsonObject &message,ServerWorker *exclude);
 
 signals:
@@ -22,6 +23,7 @@ signals:
 public slots:
     void stopServer();
     void jsonReceived(ServerWorker *sender,const QJsonObject &docObj);
+    void userDisconnected(ServerWorker *sender);
 
 };
 

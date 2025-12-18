@@ -45,7 +45,8 @@ static constexpr auto qt_meta_stringdata_ZN10ChatServerE = QtMocHelpers::stringD
     "jsonReceived",
     "ServerWorker*",
     "sender",
-    "docObj"
+    "docObj",
+    "userDisconnected"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -57,7 +58,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10ChatServerE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       4,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -65,11 +66,12 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10ChatServerE[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   32,    2, 0x06,    1 /* Public */,
+       1,    1,   38,    2, 0x06,    1 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       4,    0,   35,    2, 0x0a,    3 /* Public */,
-       5,    2,   36,    2, 0x0a,    4 /* Public */,
+       4,    0,   41,    2, 0x0a,    3 /* Public */,
+       5,    2,   42,    2, 0x0a,    4 /* Public */,
+       9,    1,   47,    2, 0x0a,    7 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
@@ -77,6 +79,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10ChatServerE[] = {
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 6, QMetaType::QJsonObject,    7,    8,
+    QMetaType::Void, 0x80000000 | 6,    7,
 
        0        // eod
 };
@@ -98,7 +101,10 @@ Q_CONSTINIT const QMetaObject ChatServer::staticMetaObject = { {
         // method 'jsonReceived'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<ServerWorker *, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QJsonObject &, std::false_type>
+        QtPrivate::TypeAndForceComplete<const QJsonObject &, std::false_type>,
+        // method 'userDisconnected'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<ServerWorker *, std::false_type>
     >,
     nullptr
 } };
@@ -111,6 +117,7 @@ void ChatServer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: _t->logMessage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 1: _t->stopServer(); break;
         case 2: _t->jsonReceived((*reinterpret_cast< std::add_pointer_t<ServerWorker*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QJsonObject>>(_a[2]))); break;
+        case 3: _t->userDisconnected((*reinterpret_cast< std::add_pointer_t<ServerWorker*>>(_a[1]))); break;
         default: ;
         }
     }
@@ -118,6 +125,13 @@ void ChatServer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         switch (_id) {
         default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
         case 2:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
+            case 0:
+                *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType::fromType< ServerWorker* >(); break;
+            }
+            break;
+        case 3:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
             case 0:
@@ -157,14 +171,14 @@ int ChatServer::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 4)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 4;
     }
     return _id;
 }
